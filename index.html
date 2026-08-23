@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111827">
+  <title>Mastermind · Il codice segreto</title>
+  <style>
+    :root { --ink:#182033; --muted:#687086; --paper:#f7f7fb; --panel:#fff; --line:#e2e5ee; --accent:#5b4bdb; --accent-dark:#4638bd; --good:#24a06b; --wrong:#f0a329; --shadow:0 18px 45px rgba(31,35,55,.10); }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--ink); font:16px/1.4 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:radial-gradient(circle at 8% 4%,#e7e3ff 0,transparent 29rem),radial-gradient(circle at 96% 95%,#dff5ec 0,transparent 29rem),var(--paper); }
+    button { font:inherit; cursor:pointer; }
+    .shell { width:min(100% - 32px, 960px); margin:0 auto; padding:26px 0 40px; }
+    header { display:flex; justify-content:space-between; align-items:center; gap:18px; margin-bottom:22px; }
+    .brand { display:flex; gap:12px; align-items:center; }
+    .logo { display:grid; grid-template-columns:repeat(2,9px); gap:3px; width:27px; }
+    .logo i { display:block; width:9px; height:9px; border-radius:50%; background:var(--accent); } .logo i:nth-child(2){background:#e05d7d}.logo i:nth-child(3){background:#f0a329}.logo i:nth-child(4){background:#24a06b}
+    h1 { margin:0; font-size:1.25rem; letter-spacing:-.03em; } .tagline { margin:1px 0 0; color:var(--muted); font-size:.83rem; }
+    .icon-button { border:1px solid var(--line); border-radius:11px; background:#fff; color:var(--ink); padding:9px 12px; display:inline-flex; align-items:center; gap:7px; font-weight:650; font-size:.9rem; } .icon-button:hover { background:#f3f2ff; border-color:#bbb4ee; }
+    .game-card { display:grid; grid-template-columns:minmax(0,1fr) 265px; overflow:hidden; background:var(--panel); border:1px solid rgba(224,227,237,.9); border-radius:22px; box-shadow:var(--shadow); }
+    .play-area { padding:30px; }
+    .eyebrow { margin:0 0 6px; color:var(--accent); font-size:.75rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+    h2 { margin:0; font-size:1.55rem; letter-spacing:-.04em; } .intro { color:var(--muted); margin:8px 0 24px; max-width:500px; }
+    .current { padding:17px; border:1px solid #dedaf9; border-radius:16px; background:linear-gradient(115deg,#f5f3ff,#fbfbff); }
+    .guess-label { display:flex; justify-content:space-between; align-items:center; color:var(--muted); font-size:.82rem; font-weight:700; margin-bottom:10px; } #turn { color:var(--accent); }
+    .slots { display:flex; gap:10px; } .slot { width:49px; height:49px; display:grid; place-items:center; border:2px solid #d9ddea; border-radius:13px; background:#fff; color:#9aa2b5; font-size:1.28rem; font-weight:800; transition:.16s; }
+    .slot.selected { border-color:var(--accent); box-shadow:0 0 0 3px rgba(91,75,219,.13); } .slot.filled { color:var(--ink); border-color:#bbb6e8; } .slot.color-filled { font-size:0; }
+    .slot .peg { width:26px; height:26px; }
+    .keypad { display:flex; flex-wrap:wrap; gap:9px; margin-top:17px; } .key { width:43px; height:40px; border:1px solid #dfe2ea; border-radius:10px; background:#fff; color:var(--ink); font-weight:800; } .key:hover { border-color:#a9a1e5; background:#f7f6ff; transform:translateY(-1px); } .key:active{transform:none}.key.color-key { position:relative; font-size:0; } .key .peg { width:22px; height:22px; margin:auto; }
+    .peg { display:block; border-radius:50%; box-shadow:inset 0 -3px 0 rgba(0,0,0,.15), inset 0 2px 2px rgba(255,255,255,.35); }
+    .actions { display:flex; gap:9px; margin-top:17px; } .primary { border:0; border-radius:10px; padding:11px 15px; color:white; background:var(--accent); font-weight:800; } .primary:hover:not(:disabled){background:var(--accent-dark)} .primary:disabled { cursor:not-allowed; opacity:.45; } .secondary { border:1px solid #dfe2ea; border-radius:10px; padding:10px 12px; background:#fff; color:#4f586d; font-weight:700; }
+    .feedback-guide { margin:22px 0 0; padding:0; list-style:none; display:flex; gap:15px; color:var(--muted); font-size:.81rem; } .legend-dot { display:inline-block; width:9px; height:9px; margin-right:5px; border-radius:50%; } .right{background:var(--good)}.misplaced{background:var(--wrong)}
+    aside { padding:30px 24px; background:#20233a; color:white; } aside h3 { margin:0 0 7px; font-size:1rem; } aside p { margin:0; color:#bec4d7; font-size:.86rem; } .history { margin:18px 0 0; padding:0; list-style:none; } .history li { display:flex; align-items:center; justify-content:space-between; padding:11px 0; border-bottom:1px solid rgba(255,255,255,.12); } .history-code { display:flex; gap:5px; } .history-value { width:26px; height:26px; display:grid; place-items:center; border-radius:7px; background:#30354f; font-size:.81rem; font-weight:800; } .history-value .peg { width:16px; height:16px; } .score { display:flex; gap:7px; font-size:.76rem; white-space:nowrap; } .score span { display:inline-flex; align-items:center; gap:4px; } .score b { color:#fff; } .empty { color:#9ca4bd; font-size:.85rem; padding:17px 0; }
+    .status { margin-top:19px; min-height:24px; font-weight:700; font-size:.9rem; } .status.success { color:var(--good); } .status.failure { color:#d4516e; }
+    dialog { width:min(100% - 28px,490px); border:0; border-radius:20px; padding:0; box-shadow:0 24px 80px rgba(18,20,37,.3); } dialog::backdrop { background:rgba(22,24,39,.48); backdrop-filter:blur(2px); } .dialog-inner { padding:26px; } .dialog-top { display:flex; justify-content:space-between; gap:15px; align-items:start; } .dialog-top h2 { font-size:1.3rem; }.close { border:0; background:#f0f1f5; color:#566077; border-radius:9px; font-size:1.25rem; width:34px; height:34px; } .setting { padding:17px 0; border-bottom:1px solid var(--line); } .setting:last-of-type { border-bottom:0; } .setting-title { font-weight:800; }.setting-help { margin:3px 0 11px; color:var(--muted); font-size:.84rem; }.choices { display:flex; flex-wrap:wrap; gap:8px; } .choice { border:1px solid #dbe0ea; border-radius:9px; padding:8px 11px; color:#536078; background:white; font-weight:700; font-size:.88rem; } .choice.active { color:var(--accent); border-color:var(--accent); background:#f4f2ff; } .dialog-actions { display:flex; justify-content:flex-end; gap:9px; margin-top:20px; }
+    .hidden { display:none!important; }
+    @media(max-width:720px){ .game-card{grid-template-columns:1fr}.play-area{padding:24px}.history{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:18px}.history li{gap:7px} aside{padding:23px 24px}.feedback-guide{flex-wrap:wrap} }
+    @media(max-width:420px){ .shell{width:min(100% - 20px,960px);padding-top:18px}.tagline{display:none}.play-area{padding:20px}.slot{width:43px;height:43px}.slots{gap:7px}.key{width:39px}.history{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div class="brand"><span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div><h1>Mastermind</h1><p class="tagline">Decifra il codice segreto</p></div></div>
+      <button class="icon-button" id="settingsButton" aria-haspopup="dialog">⚙ Impostazioni</button>
+    </header>
+    <section class="game-card" aria-label="Partita di Mastermind">
+      <div class="play-area">
+        <p class="eyebrow" id="modeLabel">Codice numerico · 3 cifre</p>
+        <h2>Qual è la combinazione?</h2>
+        <p class="intro" id="intro">Scegli tre cifre diverse da 1 a 9. Hai 10 tentativi per trovare il codice.</p>
+        <div class="current">
+          <div class="guess-label"><span>Il tuo tentativo</span><span id="turn">Tentativo 1 di 10</span></div>
+          <div class="slots" id="slots" aria-label="Cifre del tentativo"></div>
+          <div class="keypad" id="keypad" aria-label="Tastierino"></div>
+          <div class="actions"><button class="primary" id="checkButton" disabled>Verifica tentativo</button><button class="secondary" id="clearButton">Cancella</button></div>
+        </div>
+        <div class="status" id="status" aria-live="polite"></div>
+        <ul class="feedback-guide"><li><span class="legend-dot right"></span>Posizione corretta</li><li><span class="legend-dot misplaced"></span>Numero/colore presente, posizione errata</li></ul>
+      </div>
+      <aside>
+        <h3>I tuoi indizi</h3><p>Ogni riga confronta un tentativo con il codice segreto.</p>
+        <ul class="history" id="history"><li class="empty">Ancora nessun tentativo.</li></ul>
+      </aside>
+    </section>
+  </main>
+  <dialog id="settingsDialog">
+    <form method="dialog" class="dialog-inner" id="settingsForm">
+      <div class="dialog-top"><div><p class="eyebrow">Personalizza la partita</p><h2>Impostazioni</h2></div><button class="close" value="cancel" aria-label="Chiudi">×</button></div>
+      <div class="setting"><div class="setting-title">Tipo di codice</div><p class="setting-help">Numeri da 1 a 9 oppure 6 colori ben distinguibili.</p><div class="choices" data-setting="mode"><button type="button" class="choice" data-value="numbers">Numeri</button><button type="button" class="choice" data-value="colors">Colori</button></div></div>
+      <div class="setting"><div class="setting-title">Lunghezza del codice</div><p class="setting-help">Più posizioni, più difficile.</p><div class="choices" data-setting="length"><button type="button" class="choice" data-value="3">3 cifre</button><button type="button" class="choice" data-value="4">4 cifre</button><button type="button" class="choice" data-value="5">5 cifre</button></div></div>
+      <div class="setting"><div class="setting-title">Elementi ripetuti</div><p class="setting-help">Consenti lo stesso numero o colore più di una volta nel codice.</p><div class="choices" data-setting="duplicates"><button type="button" class="choice" data-value="false">Non consentiti</button><button type="button" class="choice" data-value="true">Consentiti</button></div></div>
+      <div class="dialog-actions"><button class="secondary" value="cancel">Annulla</button><button class="primary" id="newGameButton" value="default">Inizia nuova partita</button></div>
+    </form>
+  </dialog>
+  <script>
+    (() => {
+      const COLORS = [
+        {name:'Rosso', hex:'#e75b5b'}, {name:'Blu', hex:'#4884e7'}, {name:'Verde', hex:'#39a875'},
+        {name:'Giallo', hex:'#eab93f'}, {name:'Viola', hex:'#8c61d4'}, {name:'Arancio', hex:'#ed8347'}
+      ];
+      const settings = { mode:'numbers', length:3, duplicates:false };
+      let draftSettings = {...settings}, secret = [], guess = [], selectedSlot = 0, attempts = [], gameOver = false;
+      const $ = id => document.getElementById(id);
+      const slotsEl = $('slots'), keypadEl = $('keypad'), historyEl = $('history'), checkButton = $('checkButton'), statusEl = $('status');
+      const symbols = () => settings.mode === 'numbers' ? Array.from({length:9}, (_,i) => String(i+1)) : COLORS.map((_,i) => String(i));
+      const display = value => settings.mode === 'numbers' ? value : COLORS[Number(value)].name;
+      function makeSecret() { const pool = symbols(); return Array.from({length:settings.length}, () => { if(settings.duplicates) return pool[Math.floor(Math.random()*pool.length)]; const i=Math.floor(Math.random()*pool.length); return pool.splice(i,1)[0]; }); }
+      function peg(value) { return settings.mode === 'colors' ? `<span class="peg" style="background:${COLORS[Number(value)].hex}"></span>` : value; }
+      function renderSlots() { const complete = Array.from({length:settings.length}, (_,i) => guess[i]).every(value => value !== undefined); slotsEl.innerHTML = Array.from({length:settings.length}, (_, i) => `<button class="slot ${guess[i] !== undefined ? (settings.mode === 'colors'?'filled color-filled':'filled') : ''} ${i===selectedSlot && !gameOver?'selected':''}" data-slot="${i}" aria-label="Posizione ${i+1}: ${guess[i]===undefined?'vuota':display(guess[i])}">${guess[i]===undefined?'–':peg(guess[i])}</button>`).join(''); slotsEl.querySelectorAll('.slot').forEach(el => el.addEventListener('click', () => { if(!gameOver){selectedSlot=+el.dataset.slot;renderSlots();} })); $('turn').textContent = `Tentativo ${attempts.length + 1} di ${settings.length===3?10:settings.length===4?12:14}`; checkButton.disabled = !complete || gameOver; }
+      function renderKeypad() { keypadEl.innerHTML = symbols().map(value => `<button class="key ${settings.mode==='colors'?'color-key':''}" data-value="${value}" aria-label="${display(value)}">${peg(value)}</button>`).join(''); keypadEl.querySelectorAll('.key').forEach(el => el.addEventListener('click', () => addValue(el.dataset.value))); }
+      function addValue(value) { if(gameOver) return; if(!settings.duplicates && guess.some((x,i)=>x===value && i!==selectedSlot)){ statusEl.className='status failure'; statusEl.textContent='Gli elementi ripetuti non sono consentiti in questa partita.'; return; } statusEl.textContent=''; statusEl.className='status'; guess[selectedSlot]=value; while(selectedSlot<settings.length-1 && guess[selectedSlot]!==undefined) selectedSlot++; renderSlots(); }
+      function score(code, attempt) { let correct=0; const codeRest=[], attemptRest=[]; code.forEach((v,i)=> v===attempt[i] ? correct++ : codeRest.push(v)); attempt.forEach((v,i)=> {if(v!==code[i])attemptRest.push(v)}); let misplaced=0; attemptRest.forEach(v=>{const idx=codeRest.indexOf(v);if(idx!==-1){misplaced++;codeRest.splice(idx,1);}}); return {correct,misplaced}; }
+      function renderHistory() { if(!attempts.length){historyEl.innerHTML='<li class="empty">Ancora nessun tentativo.</li>';return;} historyEl.innerHTML=attempts.slice().reverse().map((entry,index)=>`<li><div class="history-code" aria-label="Tentativo ${attempts.length-index}">${entry.guess.map(v=>`<span class="history-value" title="${display(v)}">${peg(v)}</span>`).join('')}</div><div class="score"><span title="Posizione corretta"><i class="legend-dot right"></i><b>${entry.correct}</b></span><span title="Elemento presente, posizione errata"><i class="legend-dot misplaced"></i><b>${entry.misplaced}</b></span></div></li>`).join(''); }
+      function updateText() { const kind=settings.mode==='numbers'?'cifre':'colori'; $('modeLabel').textContent=`Codice ${settings.mode==='numbers'?'numerico':'a colori'} · ${settings.length} ${kind}`; $('intro').textContent=`Scegli ${settings.length} ${kind}${settings.duplicates?' (anche ripetuti)':''}. Hai ${settings.length===3?10:settings.length===4?12:14} tentativi per trovare il codice.`; }
+      function resetGame() { secret=makeSecret();guess=[];selectedSlot=0;attempts=[];gameOver=false;statusEl.textContent='';statusEl.className='status';updateText();renderSlots();renderKeypad();renderHistory(); }
+      function check() { if(!Array.from({length:settings.length}, (_,i) => guess[i]).every(value => value !== undefined)) return; const result=score(secret,guess); attempts.push({guess:[...guess],...result}); renderHistory(); const max=settings.length===3?10:settings.length===4?12:14; if(result.correct===settings.length){gameOver=true;statusEl.className='status success';statusEl.textContent=`Codice decifrato in ${attempts.length} tentativ${attempts.length===1?'o':'i'}! 🎉`;renderSlots();return;} if(attempts.length>=max){gameOver=true;statusEl.className='status failure';statusEl.innerHTML=`Partita conclusa. Il codice era: <strong>${secret.map(display).join(' · ')}</strong>.`;renderSlots();return;} guess=[];selectedSlot=0;statusEl.className='status';statusEl.textContent=result.correct||result.misplaced?'Indizio registrato. Prova una nuova combinazione.':'Nessun elemento è presente nel codice. Riprova!';renderSlots(); }
+      $('checkButton').addEventListener('click',check); $('clearButton').addEventListener('click',()=>{if(!gameOver){guess=[];selectedSlot=0;statusEl.textContent='';renderSlots();}});
+      const dialog=$('settingsDialog'); $('settingsButton').addEventListener('click',()=>{draftSettings={...settings};renderSettings();dialog.showModal();});
+      function renderSettings(){document.querySelectorAll('[data-setting]').forEach(group=>{const key=group.dataset.setting;group.querySelectorAll('.choice').forEach(btn=>btn.classList.toggle('active',String(draftSettings[key])===btn.dataset.value));});}
+      document.querySelectorAll('.choice').forEach(btn=>btn.addEventListener('click',()=>{const key=btn.closest('[data-setting]').dataset.setting;let value=btn.dataset.value;if(key==='length')value=Number(value);if(key==='duplicates')value=value==='true';draftSettings[key]=value;renderSettings();}));
+      $('newGameButton').addEventListener('click',()=>{Object.assign(settings,draftSettings);resetGame();});
+      document.addEventListener('keydown', e=>{if(dialog.open||gameOver)return;if(settings.mode==='numbers'&&/^[1-9]$/.test(e.key))addValue(e.key);if(e.key==='Backspace'){guess=[];selectedSlot=0;renderSlots();}if(e.key==='Enter')check();});
+      resetGame();
+    })();
+  </script>
+</body>
+</html>
