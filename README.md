@@ -10,6 +10,7 @@ Gioco **Mastermind** in una singola pagina HTML (nessuna dipendenza, funziona an
 ## Novità
 - 👀 **Pulsante rivela-soluzione**: ti puoi arrendere in qualsiasi momento; dopo una conferma la partita si chiude (conteggiata come persa) e il codice segreto viene mostrato in tabella e nel riquadro finale.
 - 📱 **Fix layout mobile**: celle che si adattano automaticamente agli schermi più stretti (nessuno sforamento orizzontale con codici da 5 simboli), spaziature e tastierino più compatti su telefonino, zoom riabilitato.
+- ⌨️ **Tastierino sempre visibile**: con molti tentativi la cronologia scorre in una propria area interna invece di spingere il pannello di input fuori schermo.
 - ✨ **Grafica rinnovata**: nuova palette (viola–fucsia–azzurro), pannello e modali in vetro più morbidi, celle e pulsanti con nuovi gradienti e ombre, indizi più luminosi.
 
 ## Regole
