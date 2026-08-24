@@ -5,7 +5,12 @@ Gioco **Mastermind** in una singola pagina HTML (nessuna dipendenza, funziona an
 ▶️ **Gioca ora** (via htmlpreview):
 
 - dopo il merge su `main`: <https://htmlpreview.github.io/?https://raw.githubusercontent.com/tmpalexts/Mastermind/main/index.html>
-- dal branch di sviluppo: <https://htmlpreview.github.io/?https://raw.githubusercontent.com/tmpalexts/Mastermind/arena/01a02fb3-mastermind/index.html>
+- dal branch di sviluppo: <https://htmlpreview.github.io/?https://raw.githubusercontent.com/tmpalexts/Mastermind/arena/01a0323c-mastermind/index.html>
+
+## Novità
+- 👀 **Pulsante rivela-soluzione**: ti puoi arrendere in qualsiasi momento; dopo una conferma la partita si chiude (conteggiata come persa) e il codice segreto viene mostrato in tabella e nel riquadro finale.
+- 📱 **Fix layout mobile**: celle che si adattano automaticamente agli schermi più stretti (nessuno sforamento orizzontale con codici da 5 simboli), spaziature e tastierino più compatti su telefonino, zoom riabilitato.
+- ✨ **Grafica rinnovata**: nuova palette (viola–fucsia–azzurro), pannello e modali in vetro più morbidi, celle e pulsanti con nuovi gradienti e ombre, indizi più luminosi.
 
 ## Regole
 - Di default il codice segreto è composto da **3 cifre da 1 a 9, tutte diverse**; hai 10 tentativi.
