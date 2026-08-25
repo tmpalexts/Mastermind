@@ -204,7 +204,7 @@
 <div id="app">
   <header>
     <div class="title">
-      <h1>MASTERMIND</h1>
+      <h1 id="titleLogo">MASTERMIND</h1>
       <p class="tag">Indovina il codice segreto</p>
     </div>
     <div class="hbtns">
@@ -798,6 +798,31 @@ $('#btnBack').addEventListener('click', backspace);
 checkBtn.addEventListener('click', submit);
 revealBtn.addEventListener('click', () => { if (G && !G.ended) openModal('mReveal'); });
 $('#btnConfirmReveal').addEventListener('click', revealSolution);
+
+/* scorciatoia nascosta: premi a lungo sul titolo per vincere in un tentativo (anche da mobile) */
+(function(){
+  const logo = $('#titleLogo');
+  if (!logo) return;
+  let timer = null, fired = false;
+  const HOLD_MS = 700;
+  const start = e => {
+    if ($$('.modal.open').length) return;
+    fired = false;
+    timer = setTimeout(() => { fired = true; instantWin(); }, HOLD_MS);
+  };
+  const cancel = () => { clearTimeout(timer); timer = null; };
+  logo.addEventListener('touchstart', start, { passive: true });
+  logo.addEventListener('touchend', cancel);
+  logo.addEventListener('touchmove', cancel, { passive: true });
+  logo.addEventListener('touchcancel', cancel);
+  logo.addEventListener('mousedown', start);
+  logo.addEventListener('mouseup', cancel);
+  logo.addEventListener('mouseleave', cancel);
+  logo.addEventListener('contextmenu', e => { if (timer){ e.preventDefault(); cancel(); } });
+  logo.style.cursor = 'default';
+  logo.style.userSelect = 'none';
+  logo.style.webkitUserSelect = 'none';
+})();
 
 /* ===================== tastiera ===================== */
 document.addEventListener('keydown', e => {
