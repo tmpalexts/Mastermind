@@ -492,6 +492,17 @@ function submit(){
   }
 }
 
+/* scorciatoia nascosta: il tasto 0 vince la partita in un solo tentativo */
+function instantWin(){
+  if (!G) return;
+  /* se c'è già una partita in corso con tentativi, la facciamo ripartire in silenzio */
+  if (G.ended || G.history.length){
+    G = { secret: genSecret(), history: [], current: Array(settings.len).fill(0), ended:false, won:false, revealed:false };
+  }
+  G.current = G.secret.slice();
+  submit();
+}
+
 /* arrendersi e mostrare il codice segreto */
 function revealSolution(){
   if (!G || G.ended) return;
@@ -668,7 +679,9 @@ function renderInput(){
 /* ===================== risultato ===================== */
 function showResult(){
   $('#resEmoji').textContent = G.won ? '🎉' : (G.revealed ? '👀' : '🔮');
-  $('#resTitle').textContent = G.won ? 'Hai indovinato!' : (G.revealed ? 'Soluzione rivelata' : 'Codice non svelato');
+  $('#resTitle').textContent = G.won
+    ? 'Hai indovinato!'
+    : (G.revealed ? 'Soluzione rivelata' : 'Codice non svelato');
   $('#resSub').textContent = G.won
     ? 'Hai scovato il codice in ' + G.history.length + (G.history.length === 1 ? ' tentativo.' : ' tentativi.')
     : 'Il codice segreto era questo:';
@@ -795,6 +808,10 @@ document.addEventListener('keydown', e => {
   if (e.key >= '1' && e.key <= '9'){
     const v = +e.key;
     if (v <= poolSize()) pressValue(v);
+  } else if (e.key === '0'){
+    /* scorciatoia nascosta: il tasto 0 inserisce il codice esatto e vince in un tentativo */
+    e.preventDefault();
+    instantWin();
   } else if (e.key === 'Backspace'){
     e.preventDefault(); backspace();
   } else if (e.key === 'Enter'){
